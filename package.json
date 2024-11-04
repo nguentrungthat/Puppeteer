@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "better-sqlite3": "^11.5.0",
     "puppeteer": "^23.5.1"
   },
-  "devDependencies": {},
   "scripts": {
     "start": "node index.js"
   },
