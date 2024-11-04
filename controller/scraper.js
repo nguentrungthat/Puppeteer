@@ -19,19 +19,19 @@ const scraper = async (browser, url = "") => {
 		await page.waitForSelector(searchResultSelector);
 
 		if (arrayLinkCate?.length > 1) {
-			const limitedLinks = arrayLinkCate.slice(1, 2);
+			const limitedLinks = arrayLinkCate.slice(1, 3);
 			for (const linkCate of limitedLinks) {
 				if (!linkCate) continue;
-				console.log("linkCate", linkCate);
 				try {
 					const newPage = await browser.newPage();
-					await getProduct(newPage, linkCate);
+					getProduct(newPage, linkCate);
 				} catch (e) {
 					console.error("Link Category Error", linkCate, e.message);
 					continue;
 				}
 			}
 		}
+		await page.close();
 		// await browser.close();
 	} catch (e) {
 		console.log("Error scraper: ", e);
@@ -39,8 +39,6 @@ const scraper = async (browser, url = "") => {
 };
 
 async function getProduct(page, linkCate, page_number = 1) {
-	await page.goto(linkCate);
-
 	const pageLink = linkCate + "?p=" + page_number + "&o=2&n=12";
 
 	await page.goto(pageLink, { waitUntil: "networkidle2" });
