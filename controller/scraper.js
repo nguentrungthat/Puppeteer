@@ -56,22 +56,31 @@ async function getProduct(page, linkCate, page_number = 1) {
 	await page.close();
 }
 
-async function scrapingProduct(page, productLink) {
-	try {
-		await page.goto(productLink, {
-			waitUntil: "networkidle2",
-		});
+async function scrapingProduct(page, productLink, maxRetries = 3) {
+	for (let attempt = 1; attempt <= maxRetries; attempt++) {
+		try {
+			await page.goto(productLink, {
+				waitUntil: "networkidle2",
+			});
 
-		const textNameProduct = await page.$eval("h1.product--title", (el) => el.textContent?.trim() || "");
-		const [brand, model, ...nameParts] = textNameProduct.split(" - ");
-		const nameProduct = nameParts.join(" ").trim();
+			const textNameProduct = await page.$eval("h1.product--title", (el) => el.textContent?.trim() || "");
+			const [brand, model, ...nameParts] = textNameProduct.split(" - ");
+			const nameProduct = nameParts.join(" ").trim();
 
-		const arrImage = await page.$$eval("div.image--box.image-slider--item > span", (nodes) =>
-			nodes.map((node) => node.getAttribute("data-img-large")).filter(Boolean)
-		);
-		dataModel.saveData(nameProduct, arrImage);
-	} catch (e) {
-		console.error(`Failed to process product link ${productLink}: ${e.message}`);
+			const arrImage = await page.$$eval("div.image--box.image-slider--item > span", (nodes) =>
+				nodes.map((node) => node.getAttribute("data-img-large")).filter(Boolean)
+			);
+			dataModel.saveData(nameProduct, arrImage);
+			return;
+		} catch (error) {
+			console.error(`Attempt ${attempt} failed:`, error.message);
+			if (attempt === maxRetries) {
+				console.error(`Failed to load ${productLink} after ${maxRetries} attempts`);
+				return;
+			}
+			// Wait before retrying
+			await new Promise((resolve) => setTimeout(resolve, 2000 * attempt));
+		}
 	}
 }
 

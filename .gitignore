@@ -4,6 +4,7 @@
 node_modules/
 android/
 .env
+scraped_data.db
 
 # Expo
 .expo/
