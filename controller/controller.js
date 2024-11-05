@@ -1,4 +1,4 @@
-const scraper = require("./scraper");
+const scraper = require("./scraping_tonitrus");
 const DataModel = require("../model/model");
 
 const scrapeController = async (browserInstance) => {
