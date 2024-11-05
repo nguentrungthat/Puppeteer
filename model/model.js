@@ -1,4 +1,4 @@
-const DatabaseInitializer = require("./InitDatabase");
+const DatabaseInitializer = require("./DatabaseInitializer");
 
 class DataModel {
 	constructor() {
