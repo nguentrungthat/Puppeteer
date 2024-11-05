@@ -1,7 +1,11 @@
 const DataModel = require("../model/model");
 const dataModel = new DataModel();
 
-const scraper = async (browser, url = "") => {
+/**
+ * @param {connection browser} browser // puppeteer.connect
+ * @param {string} url
+ */
+const scraper = async ({ browser, url = "" }) => {
 	try {
 		const page = await browser.newPage();
 		const searchResultSelector = "ul.navigation--list.container";
@@ -38,8 +42,13 @@ const scraper = async (browser, url = "") => {
 	}
 };
 
-async function getProduct(page, linkCate, page_number = 1) {
-	const pageLink = linkCate + "?p=" + page_number + "&o=2&n=12";
+/**
+ * @param {page} page
+ * @param {string} linkCate
+ * @param {number} pageNumber //Page to get list product
+ */
+async function getProduct(page, linkCate, pageNumber = 1) {
+	const pageLink = linkCate + "?p=" + pageNumber + "&o=2&n=12";
 
 	await page.goto(pageLink, { waitUntil: "networkidle2" });
 
@@ -56,6 +65,11 @@ async function getProduct(page, linkCate, page_number = 1) {
 	await page.close();
 }
 
+/**
+ * @param {page} page
+ * @param {string} productLink
+ * @param {number} maxRetries //Times retries if connection fail
+ */
 async function scrapingProduct(page, productLink, maxRetries = 3) {
 	for (let attempt = 1; attempt <= maxRetries; attempt++) {
 		try {
