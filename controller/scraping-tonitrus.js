@@ -15,12 +15,12 @@ const scraper = async ({ browser, url = "" }) => {
 			waitUntil: "networkidle2",
 		});
 
+		// Wait
+		await page.waitForSelector(searchResultSelector);
+
 		const arrayLinkCate = await page.$$eval("ul.navigation--list.container > li.navigation--entry a.navigation--link", (nodes) =>
 			nodes.map((node) => node.href)
 		);
-
-		// Wait
-		await page.waitForSelector(searchResultSelector);
 
 		if (arrayLinkCate?.length > 1) {
 			const limitedLinks = arrayLinkCate.slice(1, 3);
