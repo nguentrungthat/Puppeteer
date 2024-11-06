@@ -7,11 +7,12 @@ class DataModel {
 	}
 
 	// Method to insert data
-	saveData(name, imageUrls) {
-		const insert = this.db.prepare(`INSERT INTO Data (name, imageUrls)VALUES (@name, @imageUrls)`);
+	saveData(name, source, imageUrls) {
+		const insert = this.db.prepare(`INSERT INTO Data (name, source, imageUrls)VALUES (@name, @source, @imageUrls)`);
 		try {
 			insert.run({
 				name,
+				source,
 				imageUrls: JSON.stringify(imageUrls),
 			});
 			console.log(`Saved: ${name}`);

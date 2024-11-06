@@ -15,9 +15,6 @@ const scraper = async ({ browser, url = "" }) => {
 			waitUntil: "networkidle2",
 		});
 
-		//bypass cloudflare
-		await bypassCouldFlare(page);
-
 		// Wait
 		await page.waitForSelector(searchResultSelector);
 
@@ -43,46 +40,6 @@ const scraper = async ({ browser, url = "" }) => {
 		console.log("Error scraper: ", e);
 	}
 };
-
-//bypass cloudflare
-async function bypassCouldFlare(page) {
-	await new Promise((resolve) => setTimeout(resolve, 4000));
-
-	const selector = ".spacer";
-	const element = await page.$(selector);
-
-	console.log("bypass >>>>>>>>>>>>>");
-
-	if (element) {
-		const boundingBox = await element.boundingBox();
-
-		if (boundingBox) {
-			await page.evaluate((el) => (el.style.border = "5px solid red"), element);
-
-			// Move the mouse to the center of the element
-			const rect = await page.evaluate((el) => {
-				const { x, y, height } = el.getBoundingClientRect();
-				return { x, y, height };
-			}, element);
-
-			if (rect) {
-				const x = rect.x; // Left edge of the element
-				const y = rect.y + rect.height / 2; // Vertical center of the element
-
-				for (var v = x - 50; v < x + 50; v += 2) {
-					robot.moveMouse(v, y + 100);
-				}
-				await new Promise((resolve) => setTimeout(resolve, 500));
-
-				robot.mouseClick();
-			}
-		} else {
-			console.log("Element does not have a bounding box.");
-		}
-	} else {
-		console.log("Cloud flare not found!\n >>> Continute\n\n");
-	}
-}
 
 /**
  * @param page
@@ -143,7 +100,7 @@ async function scrapingProduct(page, productLink, maxRetries = 3) {
 			const arrImage = await page.$$eval("#image-carousel > button", (nodes) =>
 				nodes.map((node) => node.getAttribute("data-hero-img")).filter(Boolean)
 			);
-			dataModel.saveData(textNameProduct, arrImage);
+			dataModel.saveData(textNameProduct, "cablesandkits", arrImage);
 			return;
 		} catch (error) {
 			console.error(`Attempt ${attempt} failed:`, error.message);

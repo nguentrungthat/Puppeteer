@@ -84,7 +84,7 @@ async function scrapingProduct(page, productLink, maxRetries = 3) {
 			const arrImage = await page.$$eval("div.image--box.image-slider--item > span", (nodes) =>
 				nodes.map((node) => node.getAttribute("data-img-large")).filter(Boolean)
 			);
-			dataModel.saveData(nameProduct, arrImage);
+			dataModel.saveData(nameProduct, "tonitrus", arrImage);
 			return;
 		} catch (error) {
 			console.error(`Attempt ${attempt} failed:`, error.message);

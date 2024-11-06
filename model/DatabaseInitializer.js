@@ -27,6 +27,7 @@ class DatabaseInitializer {
             CREATE TABLE Data (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               name TEXT NOT NULL,
+              source TEXT NOT NULL,
               imageUrls TEXT NOT NULL
             )
           `
