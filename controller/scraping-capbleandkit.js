@@ -1,4 +1,5 @@
 const DataModel = require("../model/model");
+const robot = require("robotjs");
 const dataModel = new DataModel();
 
 /**
@@ -14,6 +15,9 @@ const scraper = async ({ browser, url = "" }) => {
 		await page.goto(url, {
 			waitUntil: "networkidle2",
 		});
+
+		//bypass cloudflare
+		await bypassCouldFlare(page);
 
 		// Wait
 		await page.waitForSelector(searchResultSelector);
@@ -41,6 +45,42 @@ const scraper = async ({ browser, url = "" }) => {
 	}
 };
 
+//bypass cloudflare
+async function bypassCouldFlare(page) {
+	await new Promise((resolve) => setTimeout(resolve, 4000));
+
+	const selector = ".spacer";
+	const element = await page.$(selector);
+
+	console.log("bypass >>>>>>>>>>>>>");
+
+	if (element) {
+		await page.evaluate((el) => (el.style.border = "5px solid red"), element);
+
+		// Move the mouse to the center of the element
+		const rect = await page.evaluate((el) => {
+			const { x, y, height } = el.getBoundingClientRect();
+			return { x, y, height };
+		}, element);
+
+		if (rect) {
+			const x = rect.x; // Left edge of the element
+			const y = rect.y + rect.height / 2; // Vertical center of the element
+
+			for (var v = x - 50; v < x + 50; v += 2) {
+				// 375 is space from top to check box verify
+				// It maybe difference value with difference device
+				robot.moveMouse(v, y + 375);
+			}
+			await new Promise((resolve) => setTimeout(resolve, 500));
+
+			robot.mouseClick();
+		}
+	} else {
+		console.log("Cloud flare not found!\n >>> Continute\n\n");
+	}
+}
+
 /**
  * @param page
  * @param linkCate // string
@@ -66,7 +106,7 @@ async function getListCate(page, linkCate, browser) {
 		const listProducts = await page.$$eval("div.product-results-organize > div.product-desc > a.lnk-to-prod", (nodes) =>
 			nodes.map((node) => node.href)
 		);
-		console.log("listProducts", listProducts);
+
 		for (const linkProduct of listProducts) {
 			try {
 				await scrapingProduct(page, linkProduct);

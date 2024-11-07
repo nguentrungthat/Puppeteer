@@ -13,13 +13,16 @@ class Controller {
 		try {
 			switch (targetUrl) {
 				case "tonitrus.com":
-					let browserTonitrus = await puppeteer.connect({
+					let browserConnect = await puppeteer.connect({
 						browserURL,
 					});
-					await scraperTonitrus({ browserTonitrus, url: "https://tonitrus.com/" });
+					await scraperTonitrus({ browserConnect, url: "https://tonitrus.com/" });
 					break;
 				case "cablesandkits.com":
-					const { browser, page } = await connect({});
+					let browser = await puppeteer.connect({
+						browserURL,
+					});
+					// const { browser, page } = await connect({});
 					await scraperCapbleandkit({ browser, url: "https://cablesandkits.com/" });
 					break;
 				default:
